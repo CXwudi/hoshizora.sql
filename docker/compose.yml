@@ -1,34 +1,36 @@
 version: '3.9'
 
 services:
-  script-generator:
+  # this container runs the hoshizora.sql project and generate the mariadb.sql file
+  hoshizora:
     image: node:alpine
-    container_name: vocadb-dump-script-generator
+    container_name: vocadump-hoshizora
     volumes:
       - ../:/hoshizora.sql/
     working_dir: /hoshizora.sql/
     entrypoint: /bin/sh -c "yarn && yarn build && yarn start"
     profiles:
       - initializer
-    user: 1000:1000
   
-  mariadb-importer:
+  # this container runs the mariadb.sql file against the actual mariadb container
+  importer:
     image: mariadb
-    container_name: vocadb-dump-mariadb-importer
+    container_name: vocadump-importer
     volumes:
-      - ../output:/hoshizora.sql/output # this mapping must be same as in script-generator
-    entrypoint: /bin/sh -c "mariadb -u root --password=${MYSQL_ROOT_PASSWORD} -h vocadb-dump-mariadb ${MYSQL_DATABASE} < /hoshizora.sql/output/mariadb.sql" 
+      - ../output:/hoshizora.sql/output # this mapping must be same as in hoshizora
+    entrypoint: /bin/sh -c "mariadb -u root --password=${MYSQL_ROOT_PASSWORD} -h vocadump-mariadb ${MYSQL_DATABASE} < /hoshizora.sql/output/mariadb.sql" 
     depends_on:
-      script-generator:
+      hoshizora:
         condition: service_completed_successfully
       mariadb:
         condition: service_healthy
     profiles:
-      - importer
-    
+      - initializer
+  
+  # this actual mariadb container
   mariadb:
     image: mariadb
-    container_name: vocadb-dump-mariadb
+    container_name: vocadump-mariadb
     restart: always
     ports:
       - 3306:3306
@@ -36,24 +38,27 @@ services:
       - ../mariadb/:/var/lib/mysql
     environment:
       # Use root/<MYSQL_ROOT_PASSWORD> as user/password credentials
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     healthcheck:
       # use the CMD-SHELL command as it is basically /bin/sh -c "my command"
-      # teh grep is needed, also the exit 1, see https://github.com/MariaDB/mariadb-docker/issues/94#issuecomment-1083170004
+      # the grep is needed, also the exit 1, see https://github.com/MariaDB/mariadb-docker/issues/94#issuecomment-1083170004
       test: ["CMD-SHELL", "mysqladmin -u root -p$$MYSQL_ROOT_PASSWORD ping | grep 'mysqld is alive' || exit 1"]
       interval: 1s
       timeout: 3s
       retries: 20
 
+  # this container runs the adminer for users to browse the content in the mariadb container
   adminer:
     image: adminer
-    container_name: adminer
+    container_name: vocadump-adminer
     restart: always
     ports:
       - 8080:8080
     environment:
-      ADMINER_DEFAULT_SERVER: vocadb-dump-mariadb
+      ADMINER_DEFAULT_SERVER: vocadump-mariadb
     depends_on:
       - mariadb
     profiles:
