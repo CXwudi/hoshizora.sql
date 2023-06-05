@@ -27,27 +27,29 @@ This fork simply added the docker support so that running a dump DB is as simple
     docker compose --profile initializer up -d
     ```
 
-    And wait until both the `vocadump-hoshizora` and `vocadump-importer` containers are exited.
+    And wait until both the `vocadump-hoshizora` and `vocadump-importer` containers are exited. Only the `vocadump-mariadb` is running.
 
-    To exit, run:
+    At this point, the DB is ready to be used 🙂
+
+    To stop the DB, run:
 
     ```
     docker compose --profile initializer down
     ```
 
-4. Next time when you want to run the dump DB, simply run the following command in `hoshizora.sql/docker` directory:
+4. Next time when you want to run the dump DB again, simply run the following command in `hoshizora.sql/docker` directory:
 
     ```
     docker compose up -d
     ```
 
-    To exit, run:
+    To stop, run:
 
     ```
     docker compose down
     ```
 
-Optionally, you can add `--profile debug` to the above commands to enable the [Adminer](https://hub.docker.com/_/adminer) container, then you can login to Adminer with the user/password/detabase defined in [`.env`](docker/.env) file to browse the database.
+Optionally, you can add `--profile debug` to the above commands to enable the [Adminer](https://hub.docker.com/_/adminer) container, then you can login to Adminer with the user/password/detabase defined in [`.env`](docker/.env) file to checkout the database schema.
 
 ## Original README
 
