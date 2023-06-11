@@ -42,10 +42,11 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      # needed by health check, see https://github.com/docker-library/docs/blob/master/mariadb/README.md#mariadb_mysql_localhost_user--mariadb_mysql_localhost_grants
+      MARIADB_MYSQL_LOCALHOST_USER: true
     healthcheck:
-      # use the CMD-SHELL command as it is basically /bin/sh -c "my command"
-      # the grep is needed, also the exit 1, see https://github.com/MariaDB/mariadb-docker/issues/94#issuecomment-1083170004
-      test: ["CMD-SHELL", "mysqladmin -u root -p$$MYSQL_ROOT_PASSWORD ping | grep 'mysqld is alive' || exit 1"]
+      # see https://github.com/MariaDB/mariadb-docker/issues/94#issuecomment-1069429616
+      test: ["CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
       interval: 1s
       timeout: 3s
       retries: 20
