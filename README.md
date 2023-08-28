@@ -7,6 +7,8 @@ This fork simply added the docker support so that running a dump DB is as simple
 - Docker
 - Docker Compose
 
+It is also recommended to use MacOS or *nix system. For Windows users, you can use WSL2 with Docker Desktop on host OS.
+
 ## Usage
 
 1. Clone the repository:
