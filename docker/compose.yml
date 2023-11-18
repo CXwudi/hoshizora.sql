@@ -18,7 +18,7 @@ services:
     container_name: vocadump-importer
     volumes:
       - ../output:/hoshizora.sql/output # this mapping must be same as in hoshizora
-    entrypoint: /bin/sh -c "echo 'importing to mariadb' && mariadb -u root --password=${MYSQL_ROOT_PASSWORD} -h vocadump-mariadb ${MYSQL_DATABASE} < /hoshizora.sql/output/mariadb.sql" 
+    entrypoint: /bin/sh -c "echo 'importing to mariadb' && mariadb -u root --password=${MYSQL_ROOT_PASSWORD} -h vocadump-mariadb ${MYSQL_DATABASE} < /hoshizora.sql/output/mariadb.sql && echo 'imported to mariadb'" 
     depends_on:
       hoshizora:
         condition: service_completed_successfully
@@ -35,7 +35,7 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ../mariadb/:/var/lib/mysql
+      - vocadump-db:/var/lib/mysql
     environment:
       # Use root/<MYSQL_ROOT_PASSWORD> as user/password credentials
       MYSQL_USER: ${MYSQL_USER}
@@ -64,3 +64,11 @@ services:
       - mariadb
     profiles:
       - debug 
+
+volumes:
+  vocadump-db:
+    name: vocadump-db
+
+networks:
+  default:
+    name: vocadump-defnet
