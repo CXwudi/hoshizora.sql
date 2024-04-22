@@ -14,7 +14,7 @@ export const snapshot = {
 				},
 				artist_type: {
 					name: 'artist_type',
-					type: "enum('Unknown', 'Circle', 'Label', 'Producer', 'Animator', 'Illustrator', 'Lyricist', 'Vocaloid', 'UTAU', 'CeVIO', 'OtherVoiceSynthesizer', 'OtherVocalist', 'OtherGroup', 'OtherIndividual', 'Utaite', 'Band', 'Vocalist', 'Character', 'SynthesizerV', 'CoverArtist', 'NEUTRINO', 'VoiSona', 'NewType', 'Voiceroid')",
+					type: "enum('Unknown', 'Circle', 'Label', 'Producer', 'Animator', 'Illustrator', 'Lyricist', 'Vocaloid', 'UTAU', 'CeVIO', 'OtherVoiceSynthesizer', 'OtherVocalist', 'OtherGroup', 'OtherIndividual', 'Utaite', 'Band', 'Vocalist', 'Character', 'SynthesizerV', 'CoverArtist', 'NEUTRINO', 'VoiSona', 'NewType', 'Voiceroid', 'Instrumentalist', 'Designer')",
 					unsigned: false,
 					autoincrement: false,
 					primary: false,
@@ -43,7 +43,9 @@ export const snapshot = {
 						'NEUTRINO',
 						'VoiSona',
 						'NewType',
-						'Voiceroid'
+						'Voiceroid',
+						'Instrumentalist',
+						'Designer'
 					],
 					mappedType: 'enum',
 				},

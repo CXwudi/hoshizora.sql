@@ -26,7 +26,9 @@ export enum ArtistType {
 	'NEUTRINO' = 'NEUTRINO',
 	'VoiSona' = 'VoiSona',
 	'NewType' = 'NewType',
-	'Voiceroid' = 'Voiceroid'
+	'Voiceroid' = 'Voiceroid',
+	'Instrumentalist' = 'Instrumentalist',
+	'Designer' = 'Designer',
 }
 
 export interface Artist extends TranslatedString {
