@@ -1,24 +1,22 @@
-version: '3.9'
-
 services:
   # this container runs the hoshizora.sql project and generate the mariadb.sql file
   hoshizora:
     image: node:alpine
     container_name: vocadump-hoshizora
     volumes:
-      - ../:/hoshizora.sql/
+      - ../:/hoshizora.sql/ # this mapping must be same as in importer
     working_dir: /hoshizora.sql/
     entrypoint: /bin/sh -c "yarn && yarn build && yarn start"
     profiles:
       - initializer
-  
+
   # this container runs the mariadb.sql file against the actual mariadb container
   importer:
     image: mariadb
     container_name: vocadump-importer
     volumes:
       - ../output:/hoshizora.sql/output # this mapping must be same as in hoshizora
-    entrypoint: /bin/sh -c "echo 'importing to mariadb' && mariadb -u root --password=${MYSQL_ROOT_PASSWORD} -h vocadump-mariadb ${MYSQL_DATABASE} < /hoshizora.sql/output/mariadb.sql && echo 'imported to mariadb'" 
+    entrypoint: /bin/sh -c "echo 'importing to mariadb' && mariadb -u root --password=${MYSQL_ROOT_PASSWORD} -h vocadump-mariadb ${MYSQL_DATABASE} < /hoshizora.sql/output/mariadb.sql && echo 'imported to mariadb'"
     depends_on:
       hoshizora:
         condition: service_completed_successfully
@@ -26,7 +24,7 @@ services:
         condition: service_healthy
     profiles:
       - initializer
-  
+
   # this actual mariadb container
   mariadb:
     image: mariadb
@@ -46,7 +44,7 @@ services:
       MARIADB_MYSQL_LOCALHOST_USER: true
     healthcheck:
       # see https://github.com/MariaDB/mariadb-docker/issues/94#issuecomment-1069429616
-      test: ["CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      test: ['CMD', '/usr/local/bin/healthcheck.sh', '--su-mysql', '--connect', '--innodb_initialized']
       interval: 1s
       timeout: 3s
       retries: 20
@@ -63,7 +61,7 @@ services:
     depends_on:
       - mariadb
     profiles:
-      - debug 
+      - debug
 
 volumes:
   vocadump-db:
